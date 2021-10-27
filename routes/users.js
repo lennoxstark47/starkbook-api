@@ -36,4 +36,44 @@ router.put('/:id', (req, res) => {
 	}
 });
 
+//deleting an user
+router.delete('/:id', (req, res) => {
+	if (
+		req.body.userId === req.params.id ||
+		req.body.isAdmin
+	) {
+		User.findByIdAndDelete(req.params.id)
+			.then((data) => {
+				if (!data) {
+					res
+						.status(400)
+						.json('Something is not working');
+				}
+				res.send('Account Has been deleted');
+			})
+			.catch((err) => {
+				res.status(500).json({ err });
+			});
+	} else {
+		res
+			.status(500)
+			.send('You dont have permission to delete');
+	}
+});
+
+//get a user
+router.get('/:id', (req, res) => {
+	User.findById(req.params.id)
+		.then((user) => {
+			if (!user) {
+				res.status(400).send('User not found');
+			} else {
+				res.send(user);
+			}
+		})
+		.catch((err) => {
+			res.status(500).json({ error: err });
+		});
+});
+
 module.exports = router;
