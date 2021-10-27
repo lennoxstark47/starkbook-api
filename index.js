@@ -4,6 +4,7 @@ const morgan = require('morgan');
 const helmet = require('helmet');
 const dotenv = require('dotenv');
 const userRouter = require('./routes/users');
+const authRouter = require('./routes/auth');
 
 dotenv.config();
 const port = process.env.PORT || 5000;
@@ -14,6 +15,7 @@ app.use(helmet());
 app.use(morgan('common'));
 
 app.use('/api/user', userRouter);
+app.use('/api/auth', authRouter);
 
 mongoose
 	.connect(process.env.MONGO_URI)
@@ -24,7 +26,5 @@ mongoose
 		console.log(err);
 	});
 app.listen(port, () => {
-	console.log(
-		`Server is running at port ${port}`
-	);
+	console.log(`Server is running at port ${port}`);
 });
