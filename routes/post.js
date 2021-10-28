@@ -25,45 +25,67 @@ router.post('/', (req, res) => {
 });
 
 //updating a post
-router.put('/:id', (req, res) => {
-	Post.findById(req.params.id)
-		.then((post) => {
-			if (post) {
-				if (
-					post.userId === req.body.userId ||
-					req.body.isAdmin
-				) {
-					Post.findByIdAndUpdate({
-						desc: req.body.desc,
-					})
-						.then((response) => {
-							res
-								.status(200)
-								.send(
-									'Post has been successfully updated'
-								);
-						})
-						.catch((err) => {
-							res
-								.status(500)
-								.json({ error: err });
-						});
-				} else {
-					res
-						.status(403)
-						.send(
-							'you can update only your post'
-						);
-				}
-			} else {
-				res
-					.status(500)
-					.send('Error getting the post');
-			}
-		})
-		.catch((err) => {
-			res.status(500).json({ error: err });
-		});
+router.put('/:id', async (req, res) => {
+	try {
+		const post = await Post.findById(
+			req.params.id
+		);
+		if (
+			post.userId === req.body.userId ||
+			req.body.isAdmin
+		) {
+			await post.updateOne({ $set: req.body });
+			res
+				.status(200)
+				.send('Post succesfully updated');
+		} else {
+			res
+				.status(403)
+				.send('You can update only your post');
+		}
+	} catch (err) {
+		res.status(500).json({ error: err });
+	}
 });
+// router.put('/:id', (req, res) => {
+// 	Post.findById(req.params.id)
+// 		.then((post) => {
+// 			if (post) {
+// 				if (
+// 					post.userId === req.body.userId ||
+// 					req.body.isAdmin
+// 				) {
+// 					Post.findByIdAndUpdate({
+// 						desc: req.body.desc,
+// 					})
+// 						.then((response) => {
+// 							res
+// 								.status(200)
+// 								.send(
+// 									'Post has been successfully updated'
+// 								);
+// 						})
+// 						.catch((err) => {
+// 							res
+// 								.status(500)
+// 								.json({ error: err });
+// 						});
+// 				} else {
+// 					res
+// 						.status(403)
+// 						.send(
+// 							'you can update only your post'
+// 						);
+// 				}
+// 			} else {
+// 				res
+// 					.status(500)
+// 					.send('Error getting the post');
+// 			}
+// 		})
+// 		.catch((err) => {
+// 			res.status(500).json({ error: err });
+// 		});
+// });
 
 module.exports = router;
